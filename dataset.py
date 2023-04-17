@@ -8,15 +8,17 @@ class CustomDataset(Dataset):
     def __init__(self):
         data_path = "resources/data/"
         for file in listdir(data_path):
-            image = Image.open(join(data_path, file)).convert("L")
+            image = Image.open(join(data_path, file))
             pixels = image.load()
 
             self.data = []
             
             for x in range(image.size[0]):
                 for y in range(image.size[1]):
-                    i = pixels[x, y] / 255 # r, g, b = pixels[x, y]
-                    self.data.append([[x, y], [i]])
+                    r, g, b = pixels[x, y]
+                    self.data.append([
+                        [x/image.size[0], y/image.size[1]],
+                        [r/255, g/255, b/255]])
 
 
     def __len__(self):

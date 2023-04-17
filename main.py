@@ -1,15 +1,15 @@
 import torch
 from torch.utils.data import DataLoader
 from dataset import CustomDataset
-from network import Net
+from network import NeuralNet
 from PIL import Image
 
-OLD_MODEL = False
+OLD_MODEL = True
 TRAIN     = True
-EPOCHS    = 100
+EPOCHS    = 1000
 
 
-model = Net()
+model = NeuralNet()
 if OLD_MODEL:
     model.load_state_dict(torch.load('resources/model_weights.pth'))
     model.eval()
@@ -35,7 +35,7 @@ if TRAIN:
 
             y_pred = model(x_batch)
             loss = loss_function(y_pred, y_batch)
-            
+
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
@@ -54,13 +54,13 @@ if TRAIN:
 
 
 # Generate
-image = Image.new(mode="L", size=(24, 24))
+image = Image.new(mode="RGB", size=(24, 24))
 pixels = image.load()
 for x in range(image.size[0]):
     for y in range(image.size[1]):
-        cord = torch.tensor([x, y], dtype=torch.float32)
-        i = int(model(cord) * 255) # r, g, b = int(model(cord)[0] * 255), int(model(cord)[1] * 255), int(model(cord)[2] * 255)
-        pixels[x, y] = (i)
+        cord = torch.tensor([x/image.size[0], y/image.size[1]], dtype=torch.float32)
+        r, g, b = int(model(cord)[0] * 255), int(model(cord)[1] * 255), int(model(cord)[2] * 255)
+        pixels[x, y] = (r, g, b)
 # Generate
 
 image.save('resources/Result.jpg')
